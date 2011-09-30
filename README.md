@@ -31,31 +31,19 @@ Instead of needing to spend real time waiting for your queued methods to be call
 
 In your library, write something like this:
 
-```javascript
-var setInterval = setInterval;
-var clearInterval = clearInterval;
-var setTimeout = setTimeout;
-var clearTimeout = clearTimeout;
-var Date = Date;
+```coffeescript
+{setInterval, clearInterval, setTimeout, clearTimeout, Date} = {setInterval, clearInterval, setTimeout, clearTimeout, Date}
 
-exports.setTimeFunctions = function(stubs) {
-	setInterval = stubs.setInterval;
-	setTimeout = stubs.setTimeout;
-	clearInterval = stubs.clearInterval;
-	clearTimeout = stubs.clearTimeout;
-	Date = stubs.Date;
-};
+exports.setTimeFunctions = (stubs) ->
+	{setInterval, clearInterval, setTimeout, clearTimeout, Date} = stubs
 
-
-// Write the rest of your code as normal.
-
-exports.coolstuff = function() {
-	var timer = setTimeout(function(){...}, 1000);
-	var start = new Date();
-	var time = Date.now();
-	clearTimeout(timer);
-	// ...
-}
+# Write the rest of your code as normal.
+exports.coolstuff = ->
+	timer = setTimeout (-> foo()), 1000
+	start = new Date
+	time = Date.now()
+	clearTimeout timer
+	# ...
 ```
 
 In your test (nodeunit):
