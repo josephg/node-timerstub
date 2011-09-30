@@ -154,6 +154,11 @@ module.exports = testCase
 			process.nextTick ->
 				test.done()
 
+	'wait(1000) doesnt move the clock forward immediately': (test) ->
+		start = Date.now()
+		wait 500
+		test.strictEqual Date.now(), start
+		test.done()
 
 	# clearAll
 	
@@ -167,3 +172,15 @@ module.exports = testCase
 			wait 10000, ->
 				test.done()
 	
+
+	# Integration
+	
+	'lots of timers are called in order': (test) ->
+		start = Date.now()
+		for _ in [1..1000]
+			do ->
+				interval = Math.floor(Math.random() * 500)
+				setTimeout (-> test.strictEqual Date.now(), start + interval, "int #{interval}"), interval
+
+		wait 500, ->
+			test.done()

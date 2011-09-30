@@ -46,19 +46,23 @@ exports.clearInterval = exports.clearTimeout
 exports.Date = (time) -> new Date(time ? now)
 exports.Date.now = -> now
 
-exports.wait = wait = (amt, callback) ->
+# Wait needs to be called on next tick, so its logic is wrapped.
+waitInternal = (amt, callback) ->
 	throw new Error 'amt must be a positive number' unless typeof amt == 'number' and amt >= 0
 
 	if queue.length > 0 and now + amt >= queue[0][0]
 		[time, fn, repeat, id] = queue.shift()
 		amt -= time - now
 		now = time
-		process.nextTick fn
-		process.nextTick -> wait amt, callback
+		fn()
+		process.nextTick -> waitInternal amt, callback
 		if repeat
 			insert now + repeat, fn, repeat, id
 	else
 		now += amt
-		process.nextTick callback if callback?
+		callback() if callback?
+
+exports.wait = (amt, callback) ->
+	process.nextTick -> waitInternal amt, callback
 
 exports.clearAll = -> queue = []
