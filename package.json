@@ -1,6 +1,6 @@
 {
   "author": "Joseph Gentle <josephg@gmail.com>",
-  "name": "node-timerstub",
+  "name": "timerstub",
   "description": "Stubbed out timer objects for testing",
   "version": "0.1.0",
   "repository": {
