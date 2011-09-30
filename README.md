@@ -46,7 +46,7 @@ exports.coolstuff = ->
 	# ...
 ```
 
-In your test (nodeunit):
+In a sequential testing framework like nodeunit:
 
 ```coffeescript
 timerstub = require 'timerstub'
@@ -66,6 +66,8 @@ module.export = testCase
 			test.strictEqual you.sexy, true
 			test.done()
 ```
+
+In a parallel testing framework like expresso, simply add a call to `timerstub.wait(100000000)` after all your tests have been scheduled. (In expresso, that would be in a `beforeExit` block).
 
 testtimers should be compatible with all the testing frameworks - it doesn't interfere with the
 testing framework at all.
