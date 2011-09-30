@@ -59,6 +59,6 @@ exports.wait = wait = (amt, callback) ->
 			insert now + repeat, fn, repeat, id
 	else
 		now += amt
-		process.nextTick callback
+		process.nextTick callback if callback?
 
 exports.clearAll = -> queue = []

@@ -144,6 +144,16 @@ module.exports = testCase
 			test.strictEqual v, false
 			test.done()
 		v = false
+	
+	'wait with no callback works': (test) ->
+		setTimeout (->), 1000
+		# This might crash now, or it might crash later...
+		wait 500
+		process.nextTick ->
+			wait 1000
+			process.nextTick ->
+				test.done()
+
 
 	# clearAll
 	
