@@ -3,7 +3,7 @@
   "name": "timerstub",
   "description": "Stubbed out timer objects for testing",
   "keywords": ["test", "stub", "timeout", "time"],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "url": ""
   },
