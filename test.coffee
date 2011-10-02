@@ -5,7 +5,9 @@
 
 {testCase} = require 'nodeunit'
 
-{setTimeout, clearTimeout, setInterval, clearInterval, Date, wait, clearAll} = require './timers'
+timers = require './timers'
+# We'll override these global variables with local variables with the same names
+{setTimeout, clearTimeout, setInterval, clearInterval, Date} = timers
 
 doneOnce = (test) ->
 	done = false
@@ -17,19 +19,21 @@ doneOnce = (test) ->
 
 module.exports = testCase
 	setUp: (callback) ->
-		clearAll()
+		timers.clearAll()
 		callback()
+
+	# Timeout
 
 	'setTimeout(n) calls the method after n ms': (test) ->
 		called = 0
 		setTimeout (-> called++), 1000
 
 		test.strictEqual called, 0, 'method called immediately'
-		wait 999, ->
+		timers.wait 999, ->
 			test.strictEqual called, 0, 'method called too early'
-			wait 1, ->
+			timers.wait 1, ->
 				test.strictEqual called, 1, 'method not called at the right time'
-				wait 100000, ->
+				timers.wait 100000, ->
 					test.strictEqual called, 1, 'method called again'
 					test.done()
 
@@ -45,13 +49,13 @@ module.exports = testCase
 	'setTimeout() calls methods at the right time': (test) ->
 		start = Date.now()
 		setTimeout (-> test.strictEqual Date.now(), start + 1000), 1000
-		wait 100000, -> test.done()
+		timers.wait 100000, -> test.done()
 
 	'Cancelling a timeout immediately works': (test) ->
 		called = 0
 		timeout = setTimeout (-> called++), 1000
 		clearTimeout timeout
-		wait 100000, ->
+		timers.wait 100000, ->
 			test.strictEqual called, 0
 			test.done()
 
@@ -59,9 +63,9 @@ module.exports = testCase
 		called = 0
 		timeout = setTimeout (-> called++), 1000
 
-		wait 999, ->
+		timers.wait 999, ->
 			clearTimeout timeout
-			wait 100000, ->
+			timers.wait 100000, ->
 				test.strictEqual called, 0
 				test.done()
 	
@@ -71,11 +75,11 @@ module.exports = testCase
 		called = 0
 		setInterval (-> called++), 1000
 
-		wait 999, ->
+		timers.wait 999, ->
 			test.strictEqual called, 0, 'interval called too early'
-			wait 1, ->
+			timers.wait 1, ->
 				test.strictEqual called, 1, 'interval not called at the right time'
-				wait 5000, ->
+				timers.wait 5000, ->
 					test.strictEqual called, 6, 'interval not called at the right time'
 					test.done()
 	
@@ -83,7 +87,7 @@ module.exports = testCase
 		called = 0
 		id = setInterval (-> called++), 1000
 		clearInterval id
-		wait 100000, ->
+		timers.wait 100000, ->
 			test.strictEqual called, 0
 			test.done()
 
@@ -91,13 +95,21 @@ module.exports = testCase
 		called = 0
 		id = setInterval (-> called++), 1000
 
-		wait 1001, ->
+		timers.wait 1001, ->
 			test.strictEqual called, 1
 			clearInterval id
-			wait 100000, ->
+			timers.wait 100000, ->
 				test.strictEqual called, 1
 				test.done()
-	
+
+	'An interval which cancels itself works': (test) ->
+		called = 0
+		id = setInterval (-> called++; clearInterval id), 1000
+
+		timers.wait 10000, ->
+			test.strictEqual called, 1
+			test.done()
+
 	# Date
 
 	'Date.now() returns a number': (test) ->
@@ -107,14 +119,14 @@ module.exports = testCase
 
 	'Date.now() returns increasing values over time': (test) ->
 		start = Date.now()
-		wait 1000, ->
+		timers.wait 1000, ->
 			end = Date.now()
 			test.strictEqual end, start + 1000
 			test.done()
 	
-	'Date.now()s value doesnt change with wait 0': (test) ->
+	'Date.now()s value doesnt change with timers.wait 0': (test) ->
 		start = Date.now()
-		wait 0, ->
+		timers.wait 0, ->
 			test.strictEqual Date.now(), start
 			test.done()
 	
@@ -131,34 +143,74 @@ module.exports = testCase
 
 	# Wait
 
-	'wait is asynchronous': (test) ->
+	'timers.wait is asynchronous': (test) ->
 		v = true
-		wait 1000, ->
+		timers.wait 1000, ->
 			test.strictEqual v, false
 			test.done()
 		v = false
 	
-	'wait(0) is asynchronous': (test) ->
+	'timers.wait(0) is asynchronous': (test) ->
 		v = true
-		wait 0, ->
+		timers.wait 0, ->
 			test.strictEqual v, false
 			test.done()
 		v = false
 	
-	'wait with no callback works': (test) ->
+	'timers.wait with no callback works': (test) ->
 		setTimeout (->), 1000
 		# This might crash now, or it might crash later...
-		wait 500
+		timers.wait 500
 		process.nextTick ->
-			wait 1000
+			timers.wait 1000
 			process.nextTick ->
 				test.done()
 
-	'wait(1000) doesnt move the clock forward immediately': (test) ->
+	'timers.wait(1000) doesnt move the clock forward immediately': (test) ->
 		start = Date.now()
-		wait 500
+		timers.wait 500
 		test.strictEqual Date.now(), start
 		test.done()
+
+	# Wait All
+	
+	'timers.waitAll() calls queued callback': (test) ->
+		called = 0
+		setTimeout (-> called++), 1000
+		timers.waitAll ->
+			test.strictEqual called, 1
+			test.done()
+	
+	'date is advanced only as far as it need to': (test) ->
+		start = Date.now()
+		setTimeout (->), 1000
+		timers.waitAll ->
+			test.strictEqual start + 1000, Date.now()
+			test.done()
+
+	'timers.waitAll() with nothing queued does nothing': (test) ->
+		start = Date.now()
+		timers.waitAll ->
+			test.strictEqual start, Date.now()
+			test.done()
+	
+	'timers.waitAll with no callback does not crash': (test) ->
+		start = Date.now()
+		timers.waitAll()
+		test.strictEqual start, Date.now()
+		test.done()
+	
+	'waitAll works with an interval': (test) ->
+		called = false
+		t = setInterval (->
+			throw new Error 'already called' if called
+			called = true
+			clearInterval t
+			), 1000
+
+		timers.waitAll ->
+			test.strictEqual called, true
+			test.done()
 
 	# clearAll
 	
@@ -167,9 +219,9 @@ module.exports = testCase
 		setInterval (-> throw new Error 'should not be called'), 1000
 		setInterval (-> throw new Error 'should not be called'), 500
 
-		wait 499, ->
-			clearAll()
-			wait 10000, ->
+		timers.wait 499, ->
+			timers.clearAll()
+			timers.wait 10000, ->
 				test.done()
 	
 
@@ -177,10 +229,26 @@ module.exports = testCase
 	
 	'lots of timers are called in order': (test) ->
 		start = Date.now()
+		called = 0
 		for _ in [1..1000]
 			do ->
 				interval = Math.floor(Math.random() * 500)
-				setTimeout (-> test.strictEqual Date.now(), start + interval, "int #{interval}"), interval
+				setTimeout (-> called++; test.strictEqual Date.now(), start + interval, "int #{interval}"), interval
 
-		wait 500, ->
+		timers.wait 500, ->
+			test.strictEqual called, 1000
 			test.done()
+
+	'lots of timers are called in order with timers.waitAll': (test) ->
+		# Same as the above test except timers.waitAll() instead of timers.wait()
+		start = Date.now()
+		called = 0
+		for _ in [1..1000]
+			do ->
+				interval = Math.floor(Math.random() * 500)
+				setTimeout (-> called++; test.strictEqual Date.now(), start + interval, "int #{interval}"), interval
+
+		timers.waitAll ->
+			test.strictEqual called, 1000
+			test.done()
+

@@ -46,23 +46,31 @@ exports.clearInterval = exports.clearTimeout
 exports.Date = (time) -> new Date(time ? now)
 exports.Date.now = -> now
 
-# Wait needs to be called on next tick, so its logic is wrapped.
-waitInternal = (amt, callback) ->
-	throw new Error 'amt must be a positive number' unless typeof amt == 'number' and amt >= 0
-
-	if queue.length > 0 and now + amt >= queue[0][0]
-		[time, fn, repeat, id] = queue.shift()
-		amt -= time - now
-		now = time
-		fn()
-		process.nextTick -> waitInternal amt, callback
-		if repeat
-			insert now + repeat, fn, repeat, id
-	else
-		now += amt
-		callback() if callback?
-
 exports.wait = (amt, callback) ->
-	process.nextTick -> waitInternal amt, callback
+	# Wait needs to be called on next tick, so its logic is wrapped.
+	waitInternal = (amt) ->
+		throw new Error 'amt must be a positive number' unless typeof amt == 'number' and amt >= 0
+
+		if queue.length > 0 and now + amt >= queue[0][0]
+			[time, fn, repeat, id] = queue.shift()
+			amt -= time - now
+			now = time
+			if repeat
+				insert now + repeat, fn, repeat, id
+			fn()
+			process.nextTick -> waitInternal amt, callback
+		else
+			now += amt
+			callback() if callback?
+
+	process.nextTick -> waitInternal amt
+
+exports.waitAll = (callback) ->
+	if queue.length == 0
+		process.nextTick callback if callback?
+	else
+		exports.wait queue[0][0] - now, ->
+			# wheeee async + recursion = fun!
+			exports.waitAll(callback)
 
 exports.clearAll = -> queue = []
