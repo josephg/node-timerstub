@@ -3,13 +3,13 @@
   "name": "timerstub",
   "description": "Stubbed out timer objects for testing",
   "keywords": ["test", "stub", "timeout", "time"],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": {
     "url": ""
   },
   "main": "index.js",
   "engines": {
-    "node": "~0.8"
+    "node": "~0.10"
   },
   "scripts": {
     "test": "nodeunit test.coffee"

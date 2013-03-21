@@ -25,7 +25,7 @@ insert = (time, fn, repeat, id) ->
 exports.setTimeout = (fn, timeout) ->
 	if typeof fn is 'string' then fn = -> eval fn
 	if timeout == 0
-		process.nextTick fn
+		setImmediate fn
 	else
 		insert now + timeout, fn
 
@@ -58,16 +58,16 @@ exports.wait = (amt, callback) ->
 			if repeat
 				insert now + repeat, fn, repeat, id
 			fn()
-			process.nextTick -> waitInternal amt, callback
+			setImmediate -> waitInternal amt, callback
 		else
 			now += amt
 			callback() if callback?
 
-	process.nextTick -> waitInternal amt
+	setImmediate -> waitInternal amt
 
 exports.waitAll = (callback) ->
 	if queue.length == 0
-		process.nextTick callback if callback?
+		setImmediate callback if callback?
 	else
 		exports.wait queue[0][0] - now, ->
 			# wheeee async + recursion = fun!
