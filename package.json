@@ -7,17 +7,18 @@
   "repository": {
     "url": ""
   },
-  "main": "index.js",
+  "main": "timers.js",
   "engines": {
     "node": "~0.10"
   },
   "scripts": {
+    "prepublish": "make",
     "test": "nodeunit test.coffee"
   },
   "dependencies": {
-    "coffee-script": "~1"
   },
   "devDependencies": {
+    "coffee-script": "~1",
     "nodeunit": "*"
   }
 }
