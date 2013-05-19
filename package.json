@@ -2,8 +2,13 @@
   "author": "Joseph Gentle <josephg@gmail.com>",
   "name": "timerstub",
   "description": "Stubbed out timer objects for testing",
-  "keywords": ["test", "stub", "timeout", "time"],
-  "version": "1.0.1",
+  "keywords": [
+    "test",
+    "stub",
+    "timeout",
+    "time"
+  ],
+  "version": "1.0.2",
   "repository": {
     "url": ""
   },
@@ -15,8 +20,7 @@
     "prepublish": "make",
     "test": "nodeunit test.coffee"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "coffee-script": "~1",
     "nodeunit": "*"
