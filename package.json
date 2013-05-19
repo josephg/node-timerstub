@@ -10,7 +10,8 @@
   ],
   "version": "1.0.2",
   "repository": {
-    "url": ""
+    "type": "git",
+    "url": "https://github.com/josephg/node-timerstub.git"
   },
   "main": "timers.js",
   "engines": {
