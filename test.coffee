@@ -192,11 +192,10 @@ describe 'timerstub', ->
         assert.strictEqual start, Date.now()
         done()
     
-    it 'does not crash when there is no callback', (done) ->
+    it 'does not crash when there is no callback', ->
       start = Date.now()
       timers.waitAll()
       assert.strictEqual start, Date.now()
-      done()
     
     it 'works with an interval', (done) ->
       called = false
