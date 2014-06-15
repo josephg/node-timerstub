@@ -19,11 +19,11 @@
   },
   "scripts": {
     "prepublish": "make",
-    "test": "nodeunit test.coffee"
+    "test": "mocha --compilers coffee:coffee-script/register --reporter spec test.coffee"
   },
   "dependencies": {},
   "devDependencies": {
     "coffee-script": "~1",
-    "nodeunit": "*"
+    "mocha": "*"
   }
 }
