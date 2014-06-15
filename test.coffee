@@ -50,12 +50,15 @@ describe 'timerstub', ->
       timers.wait 100000, -> done()
 
     it 'can be cancelled immediately', (done) ->
-      called = 0
-      timeout = setTimeout (-> called++), 1000
+      timeout = setTimeout (-> throw Error 'should not be called'), 0
       clearTimeout timeout
-      timers.wait 100000, ->
-        assert.strictEqual called, 0
-        done()
+      timers.wait 100000, -> done()
+
+    it '(0) can be cancelled immediately', (done) ->
+      # regression
+      timeout = setTimeout (-> throw Error 'should not be called'), 0
+      clearTimeout timeout
+      timers.wait 100000, -> done()
 
     it 'can be cancelled after some time', (done) ->
       called = 0

@@ -18,7 +18,6 @@
     "node": "~0.10"
   },
   "scripts": {
-    "prepublish": "make",
     "test": "mocha --compilers coffee:coffee-script/register --reporter spec test.coffee"
   },
   "dependencies": {},
