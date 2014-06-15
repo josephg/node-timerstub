@@ -1,9 +1,12 @@
 # Timer stub
 
-This is a super simple library to stub out the default javascript timer methods with something that
-doesn't take any actual time to run. Because slow tests are for suckers!
+This is a super simple library to stub out the default javascript timer methods
+with something that doesn't take any actual time to run. Because slow tests are
+for suckers!
 
-If you're writing a library which uses timers (like [node-browserchannel](https://github.com/josephg/node-browserchannel)), its annoying to wait 30 seconds for your timeout event to fire.
+If you're writing a library which uses timers (like
+    [node-browserchannel](https://github.com/josephg/node-browserchannel)), its
+annoying to wait 30 seconds for your timeout event to fire.
 
 ## Install it
 
@@ -22,9 +25,17 @@ Add it to your package.json:
 
 ## Use it
 
-Timer stub provides a replacement version of `setInterval`, `clearInterval`, `setTimeout`, `clearTimeout` and `Date.now` (through a wrapped `Date` function).
+Timer stub provides a replacement version of `setInterval`, `clearInterval`,
+`setTimeout`, `clearTimeout` and `Date.now` (through a wrapped `Date`
+function).
 
-Instead of needing to spend real time waiting for your queued methods to be called, you can now just call `timerstub.wait 1000, -> done()` to 'wait' 1000 milliseconds. Any queued intervals and timeouts will be called (in order) before your callback is called. Oh yeah, and `Date.now()` will return the right values in all the callbacks. As far as your library is concerned, 1000 milliseconds *have really passed*. But your test runs as fast as your CPU can manage it.
+Instead of needing to spend real time waiting for your queued methods to be
+called, you can now just call `timerstub.wait 1000, -> done()` to 'wait' 1000
+milliseconds. Any queued intervals and timeouts will be called (in order)
+before your callback is called. Oh yeah, and `Date.now()` will return the
+right values in all the callbacks. As far as your library is concerned, 1000
+milliseconds *have really passed*. But your test runs as fast as your CPU can
+manage it.
 
 
 ## Example to copy+paste
@@ -46,31 +57,33 @@ exports.coolstuff = ->
 	# ...
 ```
 
-In a sequential testing framework like nodeunit:
+In a testing framework like mocha:
 
 ```coffeescript
 timerstub = require 'timerstub'
+assert = require 'assert'
 mycoollibrary = require './mycoollibrary'
 
 mycoollibrary.setTimeFunctions timerstub
 
-module.export = testCase
-	setUp: (callback) ->
+describe 'my cool thing'
+	beforeEach ->
 		timerstub.clearAll() # This removes all queued timeouts and whatnot
-		callback()
 
-	'my cool test': (test) ->
+	it 'does cool stuff': (done) ->
 		mycoollibrary.coolstuff()
 		timerstub.wait 1000, ->
 			# Now 1000 milliseconds of setInterval calls and stuff have run... instantly!
-			test.strictEqual you.sexy, true
-			test.done()
+			assert.strictEqual you.sexy, true
+			done()
 ```
 
-In a parallel testing framework like expresso, simply add a call to `timerstub.wait(100000000)` after all your tests have been scheduled. (In expresso, that would be in a `beforeExit` block).
+In a parallel testing framework like expresso, simply add a call to
+`timerstub.wait(100000000)` after all your tests have been scheduled. (In
+expresso, that would be in a `beforeExit` block).
 
-testtimers should be compatible with all the testing frameworks - it doesn't interfere with the
-testing framework at all.
+testtimers should be compatible with all the testing frameworks - it doesn't
+interfere with the testing framework at all.
 
 
 ---
