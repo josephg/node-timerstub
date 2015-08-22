@@ -42,19 +42,27 @@ manage it.
 
 In your library, write something like this:
 
-```coffeescript
-{setInterval, clearInterval, setTimeout, clearTimeout, Date} = {setInterval, clearInterval, setTimeout, clearTimeout, Date}
+```javascript
+var setInterval, clearInterval, setTimeout, clearTimeout, Date;
+function setTimeFunctions(source) {
+  setInterval = source.setInterval;
+  clearInterval = source.clearInterval;
+  setTimeout = source.setTimeout;
+  clearTimeout = source.clearTimeout;
+  Date = source.Date;
+};
+setTimeFunctions((function() { return this; })()); // Use the normal ones.
+exports.setTimeFunctions = setTimeFunctions;
 
-exports.setTimeFunctions = (stubs) ->
-	{setInterval, clearInterval, setTimeout, clearTimeout, Date} = stubs
 
-# Write the rest of your code as normal.
-exports.coolstuff = ->
-	timer = setTimeout (-> foo()), 1000
-	start = new Date
-	time = Date.now()
-	clearTimeout timer
-	# ...
+// ... Then write the rest of your code as normal.
+exports.coolstuff = function() {
+	var timer = setTimeout(function() { foo(); }, 1000);
+	var start = new Date();
+	time = Date.now();
+	clearTimeout(timer);
+  // ...
+}
 ```
 
 In a testing framework like mocha:
@@ -79,7 +87,7 @@ describe 'my cool thing'
 ```
 
 In a parallel testing framework like expresso, simply add a call to
-`timerstub.wait(100000000)` after all your tests have been scheduled. (In
+`timerstub.waitAll()` after all your tests have been scheduled. (In
 expresso, that would be in a `beforeExit` block).
 
 testtimers should be compatible with all the testing frameworks - it doesn't
