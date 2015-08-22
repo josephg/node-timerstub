@@ -69,6 +69,14 @@ describe 'timerstub', ->
         timers.wait 100000, ->
           assert.strictEqual called, 0
           done()
+
+    it 'calls them in order', (done) ->
+      state = 0
+      setTimeout (-> assert.equal(state, 0); state = 1), 100
+      setTimeout (-> assert.equal(state, 1); state = 2), 1000
+      timers.wait 2000, ->
+        assert.equal state, 2
+        done()
   
   # Intervals
   

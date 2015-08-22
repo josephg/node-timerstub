@@ -18,7 +18,7 @@ var lastId = 0;
 var insert = function(time, fn, repeat, id) {
   var i = 0;
 
-  while (i < queue.length && queue[i].time <= now)
+  while (i < queue.length && queue[i].time <= time)
     ++i;
 
   if (id == null)
