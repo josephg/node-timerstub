@@ -233,6 +233,19 @@ describe 'timerstub', ->
         timers.wait 10000, ->
           done()
   
+  # autoadvance
+
+  describe 'autoAdvance', ->
+    it 'should advance the clock by the autoadvance amount', (done) ->
+      timers.setAutoAdvance 1
+      setTimeout (->), 0
+      setTimeout (->), 0
+      setTimeout (->), 0
+      called = false
+      setTimeout (-> called = true), 3
+      timers.waitAll ->
+        assert called
+        done()
 
   # Integration
   

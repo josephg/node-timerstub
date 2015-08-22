@@ -11,6 +11,10 @@ var queue = [];
 
 var lastId = 0;
 
+// Amount of fake time to advance with each function call we fire. Set with
+// setAutoAdvance().
+var autoAdvance = 0;
+
 // Insert a new element in the queue. repeat = number of ms before the function
 // should be called again, or 0 if the function should not repeat.
 //
@@ -93,6 +97,8 @@ var wait = exports.wait = function(amt, callback) {
       }
 
       command.fn();
+      
+      amt += autoAdvance;
 
       // ... and requeue wait() with the remaining time in a setImmediate so we
       // don't starve the event loop.
@@ -127,3 +133,8 @@ exports.waitAll = function(callback) {
 exports.clearAll = function() {
   queue = [];
 };
+
+exports.setAutoAdvance = function(aa) {
+  autoAdvance = aa;
+}
+
