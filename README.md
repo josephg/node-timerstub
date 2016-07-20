@@ -60,23 +60,27 @@ exports.coolstuff = function() {
 
 In a testing framework like mocha:
 
-```coffeescript
-timerstub = require 'timerstub'
-assert = require 'assert'
-mycoollibrary = require './mycoollibrary'
+```javascript
+const timerstub = require('timerstub');
+const assert = require('assert');
+const mycoollibrary = require('./mycoollibrary');
 
-mycoollibrary.setTimeFunctions timerstub
+mycoollibrary.setTimeFunctions(timerstub); // Magic line.
 
-describe 'my cool thing'
-	beforeEach ->
-		timerstub.clearAll() # This removes all queued timeouts and whatnot
+describe('my cool thing', function() {
+	beforeEach(() => {
+		timerstub.clearAll(); // This removes all queued timeouts to make sure tests are isolated
+	});
 
-	it 'does cool stuff': (done) ->
-		mycoollibrary.coolstuff()
-		timerstub.wait 1000, ->
-			# Now 1000 milliseconds of setInterval calls and stuff have run... instantly!
-			assert.strictEqual you.sexy, true
-			done()
+	it('does cool stuff', (done) => {
+		mycoollibrary.coolstuff();
+		timerstub.wait(1000, () => {
+			// Now 1000 milliseconds of setInterval calls and stuff have run... instantly!
+			assert.strictEqual(you.sexy, true);
+			done();
+		});
+	});
+});
 ```
 
 In a parallel testing framework like expresso, simply add a call to
