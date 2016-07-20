@@ -11,16 +11,9 @@ annoying to wait 30 seconds for your timeout event to fire.
 ## Install it
 
 ```
-npm install timerstub
+npm install --save-dev timerstub
 ```
 
-Add it to your package.json:
-
-```json
-  "dependencies": {
-    "timerstub": "*"
-  }
-```
 
 
 ## Use it
