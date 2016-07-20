@@ -23,7 +23,7 @@ Timer stub provides a replacement version of `setInterval`, `clearInterval`,
 function).
 
 Instead of needing to spend real time waiting for your queued methods to be
-called, you can now just call `timerstub.wait 1000, -> done()` to 'wait' 1000
+called, you can now just call `timerstub.wait(1000, () => done())` to 'wait' 1000
 milliseconds. Any queued intervals and timeouts will be called (in order)
 before your callback is called. Oh yeah, and `Date.now()` will return the
 right values in all the callbacks. As far as your library is concerned, 1000
